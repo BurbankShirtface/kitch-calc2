@@ -76,10 +76,11 @@ body.modal-open {
 }
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
   padding: 2rem 0;
+  justify-content: center;
 }
 
 /* Project Card Styles */
@@ -89,6 +90,10 @@ body.modal-open {
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  flex: 1 1 300px;
+  min-width: 300px;
+  max-width: calc(33.333% - 1.34rem);
 }
 
 .project-card:hover {
@@ -121,7 +126,7 @@ body.modal-open {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .project-name {
@@ -143,6 +148,8 @@ body.modal-open {
 .project-details {
   color: #666;
   font-size: 0.9rem;
+  /* display: flex; */
+  flex-direction: column;
 }
 
 .project-details p {
@@ -157,8 +164,16 @@ body.modal-open {
   min-width: 70px;
 }
 
+.project-footer-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: auto;
+  padding: 0 1rem;
+}
+
 .project-footer {
-  margin-top: 1.5rem;
+  width: 100%;
   padding-top: 1rem;
   border-top: 1px solid #f0f0f0;
   display: flex;
@@ -388,8 +403,9 @@ body.modal-open {
 
 /* Progress Bar Styles */
 .project-progress {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   padding: 0.5rem 0;
+  width: 100%;
 }
 
 .progress-bar {
@@ -507,4 +523,20 @@ body.modal-open {
   line-height: 1;
   cursor: pointer;
   color: #666;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+.detail-item i {
+  flex-shrink: 0;
+  width: 16px;
+  color: #718096;
 }

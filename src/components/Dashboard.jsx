@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import houseImage from "../assets/house.jpg";
 import FilterBar from "./FilterBar";
+import ProjectCard from "./ProjectCard";
 
 const Dashboard = ({ projects, setProjects }) => {
   const navigate = useNavigate();
@@ -127,10 +128,6 @@ const Dashboard = ({ projects, setProjects }) => {
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
-    setProjects(projects.filter((project) => project.id !== id));
-  };
-
   const handleProjectClick = (projectId) => {
     navigate(`/project/${projectId}`);
   };
@@ -223,52 +220,11 @@ const Dashboard = ({ projects, setProjects }) => {
         ) : (
           <div className="projects-grid">
             {getFilteredAndSortedProjects().map((project) => (
-              <div
+              <ProjectCard
                 key={project.id}
-                className="project-card"
-                onClick={() => handleProjectClick(project.id)}
-              >
-                <button
-                  className="delete-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(project.id);
-                  }}
-                >
-                  ×
-                </button>
-                <div className="project-card-header">
-                  <h3>{project.projectName}</h3>
-                  <div className="project-progress">
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${calculateProgress(project)}%` }}
-                      />
-                    </div>
-                    <span className="progress-text">
-                      {calculateProgress(project)}% Complete
-                    </span>
-                  </div>
-                  <div
-                    className="stage-badge"
-                    data-stage={project.currentStage}
-                  >
-                    {project.currentStage}
-                  </div>
-                </div>
-                <div className="project-details">
-                  <p>
-                    <strong>Address:</strong> {project.address}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {project.phoneNumber}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {project.emailAddress}
-                  </p>
-                </div>
-              </div>
+                project={project}
+                onClick={handleProjectClick}
+              />
             ))}
           </div>
         )}
