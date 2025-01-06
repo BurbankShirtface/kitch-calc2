@@ -1,0 +1,8 @@
+.project-card.finished {
+  border-color: #ff9800;
+}
+
+.status-badge.finished {
+  background-color: #ff9800;
+  color: white;
+}
