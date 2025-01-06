@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import houseImage from "../assets/house.jpg";
+import FilterBar from "./FilterBar";
 
 const Dashboard = ({ projects, setProjects }) => {
   const navigate = useNavigate();
@@ -16,6 +17,15 @@ const Dashboard = ({ projects, setProjects }) => {
     projectType: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
+  const [filters, setFilters] = useState({
+    status: "all",
+    projectType: "all",
+    dateRange: null,
+  });
+  const [sortConfig, setSortConfig] = useState({
+    field: "projectName",
+    direction: "asc",
+  });
 
   useEffect(() => {
     if (isModalOpen) {
@@ -125,18 +135,45 @@ const Dashboard = ({ projects, setProjects }) => {
     navigate(`/project/${projectId}`);
   };
 
-  // Filter projects based on search query
-  const filteredProjects = projects.filter((project) => {
-    const searchTerm = searchQuery.toLowerCase();
-    return (
-      project.projectName.toLowerCase().includes(searchTerm) ||
-      project.address.toLowerCase().includes(searchTerm) ||
-      project.phoneNumber.toLowerCase().includes(searchTerm) ||
-      project.emailAddress.toLowerCase().includes(searchTerm) ||
-      project.projectType.toLowerCase().includes(searchTerm) ||
-      project.currentStage.toLowerCase().includes(searchTerm)
-    );
-  });
+  // Calculate project progress
+  const calculateProgress = (project) => {
+    const allTodos = Object.values(project.todos).flat();
+    const completedTodos = allTodos.filter((todo) => todo.completed);
+    return Math.round((completedTodos.length / allTodos.length) * 100);
+  };
+
+  // Apply filters and sorting
+  const getFilteredAndSortedProjects = () => {
+    let filtered = projects.filter((project) => {
+      const matchesSearch = searchQuery
+        .toLowerCase()
+        .split(" ")
+        .every((term) =>
+          Object.values(project).some((value) =>
+            String(value).toLowerCase().includes(term)
+          )
+        );
+
+      const matchesStatus =
+        filters.status === "all" || project.currentStage === filters.status;
+      const matchesType =
+        filters.projectType === "all" ||
+        project.projectType === filters.projectType;
+
+      return matchesSearch && matchesStatus && matchesType;
+    });
+
+    // Apply sorting
+    return filtered.sort((a, b) => {
+      const aValue = a[sortConfig.field];
+      const bValue = b[sortConfig.field];
+
+      if (sortConfig.direction === "asc") {
+        return aValue > bValue ? 1 : -1;
+      }
+      return aValue < bValue ? 1 : -1;
+    });
+  };
 
   return (
     <div className="dashboard">
@@ -170,15 +207,22 @@ const Dashboard = ({ projects, setProjects }) => {
         </div>
       </header>
 
+      <FilterBar
+        filters={filters}
+        setFilters={setFilters}
+        sortConfig={sortConfig}
+        setSortConfig={setSortConfig}
+      />
+
       <div className="projects-list">
         <h2>Current Projects</h2>
-        {filteredProjects.length === 0 ? (
+        {getFilteredAndSortedProjects().length === 0 ? (
           <div className="no-results">
             No projects match your search criteria
           </div>
         ) : (
           <div className="projects-grid">
-            {filteredProjects.map((project) => (
+            {getFilteredAndSortedProjects().map((project) => (
               <div
                 key={project.id}
                 className="project-card"
@@ -195,9 +239,23 @@ const Dashboard = ({ projects, setProjects }) => {
                 </button>
                 <div className="project-card-header">
                   <h3>{project.projectName}</h3>
-                  <span className="stage-indicator">
+                  <div className="project-progress">
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${calculateProgress(project)}%` }}
+                      />
+                    </div>
+                    <span className="progress-text">
+                      {calculateProgress(project)}% Complete
+                    </span>
+                  </div>
+                  <div
+                    className="stage-badge"
+                    data-stage={project.currentStage}
+                  >
                     {project.currentStage}
-                  </span>
+                  </div>
                 </div>
                 <div className="project-details">
                   <p>

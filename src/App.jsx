@@ -1,7 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  createRoutesFromElements,
+} from "react-router-dom";
 import { useState } from "react";
 import Dashboard from "./components/Dashboard";
 import ProjectDetails from "./components/ProjectDetails";
+import { ProjectProvider } from "./context/ProjectContext";
 import houseImage from "./assets/house.jpg";
 import "./App.css";
 
@@ -130,24 +136,31 @@ function App() {
   ]);
 
   return (
-    <Router>
-      <div className="app">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Dashboard projects={projects} setProjects={setProjects} />
-            }
-          />
-          <Route
-            path="/project/:id"
-            element={
-              <ProjectDetails projects={projects} setProjects={setProjects} />
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+    <ProjectProvider>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <div className="app">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Dashboard projects={projects} setProjects={setProjects} />
+              }
+            />
+            <Route
+              path="/project/:id"
+              element={
+                <ProjectDetails projects={projects} setProjects={setProjects} />
+              }
+            />
+          </Routes>
+        </div>
+      </Router>
+    </ProjectProvider>
   );
 }
 
